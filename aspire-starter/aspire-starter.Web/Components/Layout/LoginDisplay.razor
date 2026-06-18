@@ -1,0 +1,13 @@
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <span class="me-2 text-light">
+            <i class="bi bi-person-circle"></i> @context.User.Identity?.Name
+        </span>
+        <a href="/auth/logout" class="btn btn-outline-light btn-sm">Logout</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/auth/login?returnUrl=@Uri.EscapeDataString(Navigation.Uri)" class="btn btn-outline-light btn-sm">Login</a>
+    </NotAuthorized>
+</AuthorizeView>

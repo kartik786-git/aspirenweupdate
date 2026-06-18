@@ -1,0 +1,85 @@
+{
+  "realm": "hospital-hms",
+  "displayName": "Hospital Management System",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 3600,
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "System administrator" },
+      { "name": "doctor", "description": "Medical doctor" },
+      { "name": "nurse", "description": "Nurse" },
+      { "name": "receptionist", "description": "Front desk receptionist" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "hospital-web",
+      "name": "Hospital Web App",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:5100/*", "https://localhost:7128/*"],
+      "webOrigins": ["http://localhost:5100", "https://localhost:7128"],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "hospital-api",
+      "name": "Hospital API",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "hospital-api-secret",
+      "serviceAccountsEnabled": true,
+      "bearerOnly": true,
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@hospital.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "admin123", "temporary": false }],
+      "realmRoles": ["admin", "doctor"]
+    },
+    {
+      "username": "dr.smith",
+      "email": "dr.smith@hospital.com",
+      "firstName": "John",
+      "lastName": "Smith",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "doctor123", "temporary": false }],
+      "realmRoles": ["doctor"]
+    },
+    {
+      "username": "nurse.jane",
+      "email": "jane@hospital.com",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "nurse123", "temporary": false }],
+      "realmRoles": ["nurse"]
+    },
+    {
+      "username": "reception.alice",
+      "email": "alice@hospital.com",
+      "firstName": "Alice",
+      "lastName": "Johnson",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "reception123", "temporary": false }],
+      "realmRoles": ["receptionist"]
+    }
+  ]
+}

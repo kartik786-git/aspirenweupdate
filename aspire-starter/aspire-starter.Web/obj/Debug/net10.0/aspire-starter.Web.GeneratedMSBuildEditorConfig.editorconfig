@@ -1,0 +1,107 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = aspire-starter.Web
+build_property.RootNamespace = aspire-starter.Web
+build_property.ProjectDir = D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 10.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/LoginDisplay.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTG9naW5EaXNwbGF5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Appointments/AppointmentForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBcHBvaW50bWVudHNcQXBwb2ludG1lbnRGb3JtLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Appointments/AppointmentList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBcHBvaW50bWVudHNcQXBwb2ludG1lbnRMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Billing/BillingList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCaWxsaW5nXEJpbGxpbmdMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Departments/DepartmentList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZXBhcnRtZW50c1xEZXBhcnRtZW50TGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Doctors/DoctorForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEb2N0b3JzXERvY3RvckZvcm0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Doctors/DoctorList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEb2N0b3JzXERvY3Rvckxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/MedicalRecords/MedicalRecordList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNZWRpY2FsUmVjb3Jkc1xNZWRpY2FsUmVjb3JkTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Patients/PatientDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQYXRpZW50c1xQYXRpZW50RGV0YWlsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Patients/PatientForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQYXRpZW50c1xQYXRpZW50Rm9ybS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Patients/PatientList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQYXRpZW50c1xQYXRpZW50TGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Rooms/RoomList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSb29tc1xSb29tTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Staff/StaffForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdGFmZlxTdGFmZkZvcm0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Staff/StaffList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdGFmZlxTdGFmZkxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-cf0c2tco9v
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-7nagjntbnc

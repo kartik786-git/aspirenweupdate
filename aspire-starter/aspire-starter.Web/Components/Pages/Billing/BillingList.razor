@@ -1,0 +1,146 @@
+@attribute [Authorize]
+@page "/billing"
+@inject BillingApiClient BillingApi
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Billing</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Billing & Invoices</h3>
+    <button class="btn btn-success" @onclick="() => showNewForm = !showNewForm">
+        @(showNewForm ? "Hide Form" : "New Invoice")
+    </button>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <select @bind="filterStatus" @bind:after="LoadData" class="form-select">
+            <option value="">All Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Partial">Partial</option>
+        </select>
+    </div>
+</div>
+
+@if (showNewForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Generate New Invoice</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient ID</label>
+                    <input @bind="newBill.PatientId" class="form-control" type="number" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Total Amount</label>
+                    <input @bind="newBill.TotalAmount" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Paid Amount</label>
+                    <input @bind="newBill.PaidAmount" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Payment Method</label>
+                    <select @bind="newBill.PaymentMethod" class="form-select">
+                        <option value="">Select</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Card">Card</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="UPI">UPI</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" @onclick="CreateBill">Generate Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (bills is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (bills.Count == 0)
+{
+    <div class="alert alert-info">No bills found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Invoice #</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in bills)
+            {
+                <tr>
+                    <td>@b.InvoiceNumber</td>
+                    <td>@b.Patient?.FullName</td>
+                    <td>@b.BillDate.ToShortDateString()</td>
+                    <td>$@b.TotalAmount.ToString("N2")</td>
+                    <td>$@b.PaidAmount.ToString("N2")</td>
+                    <td>$@b.DueAmount.ToString("N2")</td>
+                    <td><span class="badge @GetBadge(b.Status)">@b.Status</span></td>
+                    <td>
+                        @if (b.Status != "Paid")
+                        {
+                            <button class="btn btn-sm btn-success" @onclick="() => Pay(b.Id, b.DueAmount)">Pay $@b.DueAmount</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<BillingDto>? bills;
+    private string filterStatus = "";
+    private bool showNewForm;
+    private BillingDto newBill = new();
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        bills = await BillingApi.GetAllAsync(string.IsNullOrWhiteSpace(filterStatus) ? null : filterStatus);
+    }
+
+    private async Task CreateBill()
+    {
+        await BillingApi.CreateAsync(newBill);
+        newBill = new();
+        showNewForm = false;
+        await LoadData();
+    }
+
+    private async Task Pay(int id, decimal amount)
+    {
+        await BillingApi.PayAsync(id, amount);
+        await LoadData();
+    }
+
+    private static string GetBadge(string status) => status switch
+    {
+        "Paid" => "bg-success",
+        "Partial" => "bg-warning",
+        "Unpaid" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}

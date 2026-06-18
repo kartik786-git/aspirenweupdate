@@ -1,0 +1,91 @@
+@attribute [Authorize]
+@page "/staff"
+@inject StaffApiClient StaffApi
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Staff</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Staff Directory</h3>
+    <a href="/staff/add" class="btn btn-success">+ Add Staff</a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <select @bind="filterRole" @bind:after="LoadData" class="form-select">
+            <option value="">All Roles</option>
+            <option value="Nurse">Nurse</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Admin">Admin</option>
+            <option value="Technician">Technician</option>
+        </select>
+    </div>
+</div>
+
+@if (staff is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (staff.Count == 0)
+{
+    <div class="alert alert-info">No staff found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in staff)
+            {
+                <tr>
+                    <td>@s.FullName</td>
+                    <td>@s.Role</td>
+                    <td>@s.Department?.Name</td>
+                    <td>@s.Phone</td>
+                    <td>@s.Email</td>
+                    <td>
+                        <span class="badge @(s.IsActive ? "bg-success" : "bg-danger")">
+                            @(s.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+                    <td>
+                        <a href="/staff/edit/@s.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(s.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<StaffDto>? staff;
+    private string filterRole = "";
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        staff = await StaffApi.GetAllAsync(string.IsNullOrWhiteSpace(filterRole) ? null : filterRole);
+    }
+
+    private async Task Delete(int id)
+    {
+        await StaffApi.DeleteAsync(id);
+        await LoadData();
+    }
+}

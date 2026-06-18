@@ -1,0 +1,101 @@
+@attribute [Authorize]
+@page "/departments"
+@inject DepartmentApiClient DepartmentApi
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Departments</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Hospital Departments</h3>
+    <button class="btn btn-success" @onclick="ShowAddModal">+ Add Department</button>
+</div>
+
+@if (departments is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var dept in departments)
+        {
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@dept.Name</h5>
+                        <p class="card-text text-muted">@dept.Description</p>
+                        <p class="mb-1"><small><strong>Location:</strong> @dept.Location</small></p>
+                        <p class="mb-1"><small><strong>Head:</strong> @dept.HeadDoctor?.FullName</small></p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(dept.Id)">Delete</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (showModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Department</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input @bind="newDept.Name" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea @bind="newDept.Description" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input @bind="newDept.Location" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                    <button class="btn btn-primary" @onclick="AddDepartment">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<DepartmentDto>? departments;
+    private bool showModal;
+    private DepartmentDto newDept = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await DepartmentApi.GetAllAsync();
+    }
+
+    private void ShowAddModal() => showModal = true;
+    private void CloseModal() => showModal = false;
+
+    private async Task AddDepartment()
+    {
+        await DepartmentApi.CreateAsync(newDept);
+        showModal = false;
+        newDept = new();
+        departments = await DepartmentApi.GetAllAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await DepartmentApi.DeleteAsync(id);
+        departments = await DepartmentApi.GetAllAsync();
+    }
+}

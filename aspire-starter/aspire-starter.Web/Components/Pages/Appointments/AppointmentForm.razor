@@ -1,0 +1,96 @@
+@attribute [Authorize]
+@page "/appointments/book"
+@inject AppointmentApiClient AppointmentApi
+@inject PatientApiClient PatientApi
+@inject DoctorApiClient DoctorApi
+@inject NavigationManager Navigation
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Book Appointment</PageTitle>
+
+<h3>Book New Appointment</h3>
+
+<EditForm Model="appointment" OnValidSubmit="Save" class="row g-3">
+    <DataAnnotationsValidator />
+
+    <div class="col-md-6">
+        <label class="form-label">Patient</label>
+        <select @bind="appointment.PatientId" class="form-select">
+            <option value="0">Select Patient</option>
+            @foreach (var p in patients)
+            {
+                <option value="@p.Id">@p.FullName (@p.Phone)</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Doctor</label>
+        <select @bind="appointment.DoctorId" class="form-select">
+            <option value="0">Select Doctor</option>
+            @foreach (var d in doctors)
+            {
+                <option value="@d.Id">@d.FullName - @d.Specialization</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <InputDate @bind-Value="appointment.AppointmentDate" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Start Time</label>
+        <input type="time" @bind="appointment.StartTime" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">End Time</label>
+        <input type="time" @bind="appointment.EndTime" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Reason</label>
+        <InputText @bind-Value="appointment.Reason" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Notes</label>
+        <InputText @bind-Value="appointment.Notes" class="form-control" />
+    </div>
+    <div class="col-12">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+        <button type="submit" class="btn btn-primary">Book Appointment</button>
+        <a href="/appointments" class="btn btn-secondary ms-2">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    private AppointmentDto appointment = new()
+    {
+        AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
+        StartTime = new TimeOnly(9, 0),
+        EndTime = new TimeOnly(9, 30)
+    };
+    private List<PatientDto> patients = [];
+    private List<DoctorDto> doctors = [];
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await PatientApi.GetAllAsync();
+        doctors = await DoctorApi.GetAllAsync();
+    }
+
+    private async Task Save()
+    {
+        errorMessage = null;
+        var result = await AppointmentApi.CreateAsync(appointment);
+        if (result is null)
+        {
+            errorMessage = "Could not book appointment. The doctor may already have an appointment at this time.";
+        }
+        else
+        {
+            Navigation.NavigateTo("/appointments");
+        }
+    }
+}

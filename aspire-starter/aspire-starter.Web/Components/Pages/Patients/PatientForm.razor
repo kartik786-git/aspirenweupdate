@@ -1,0 +1,94 @@
+@attribute [Authorize]
+@page "/patients/add"
+@page "/patients/edit/{id:int}"
+@inject PatientApiClient PatientApi
+@inject NavigationManager Navigation
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>@title</PageTitle>
+
+<h3>@title</h3>
+
+<EditForm Model="patient" OnValidSubmit="Save" class="row g-3">
+    <DataAnnotationsValidator />
+
+    <div class="col-md-6">
+        <label class="form-label">First Name *</label>
+        <InputText @bind-Value="patient.FirstName" class="form-control" />
+        <ValidationMessage For="() => patient.FirstName" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Last Name *</label>
+        <InputText @bind-Value="patient.LastName" class="form-control" />
+        <ValidationMessage For="() => patient.LastName" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Date of Birth</label>
+        <InputDate @bind-Value="patient.DateOfBirth" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Gender</label>
+        <select @bind="patient.Gender" class="form-select">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Blood Group</label>
+        <InputText @bind-Value="patient.BloodGroup" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Phone *</label>
+        <InputText @bind-Value="patient.Phone" class="form-control" />
+        <ValidationMessage For="() => patient.Phone" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <InputText @bind-Value="patient.Email" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Address</label>
+        <InputTextArea @bind-Value="patient.Address" class="form-control" rows="2" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Emergency Contact Name</label>
+        <InputText @bind-Value="patient.EmergencyContactName" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Emergency Contact Phone</label>
+        <InputText @bind-Value="patient.EmergencyContactPhone" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/patients" class="btn btn-secondary ms-2">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    private string title = "Register New Patient";
+    private PatientDto patient = new();
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id > 0)
+        {
+            title = "Edit Patient";
+            var existing = await PatientApi.GetByIdAsync(Id);
+            if (existing is not null) patient = existing;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (Id > 0)
+            await PatientApi.UpdateAsync(Id, patient);
+        else
+            await PatientApi.CreateAsync(patient);
+        Navigation.NavigateTo("/patients");
+    }
+}

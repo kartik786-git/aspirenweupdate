@@ -1,0 +1,120 @@
+@attribute [Authorize]
+@page "/rooms"
+@inject RoomApiClient RoomApi
+@inject PatientApiClient PatientApi
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Room Management</PageTitle>
+
+<h3>Room & Bed Management</h3>
+
+@if (rooms is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var room in rooms)
+        {
+            <div class="col-md-4">
+                <div class="card @(room.IsOccupied ? "border-danger" : "border-success") h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">@room.DisplayName</h5>
+                            <span class="badge @(room.IsOccupied ? "bg-danger" : "bg-success") fs-6">
+                                @(room.IsOccupied ? "Occupied" : "Available")
+                            </span>
+                        </div>
+                        <p class="mb-1"><strong>Department:</strong> @room.Department?.Name</p>
+                        <p class="mb-1"><strong>Daily Rate:</strong> $@room.DailyRate.ToString("N2")</p>
+                        @if (room.IsOccupied && room.CurrentPatient is not null)
+                        {
+                            <p class="mb-1"><strong>Patient:</strong> @room.CurrentPatient.FullName</p>
+                            <p class="mb-1"><strong>Admitted:</strong> @room.AdmissionDate?.ToShortDateString()</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        @if (room.IsOccupied)
+                        {
+                            <button class="btn btn-sm btn-warning" @onclick="() => Discharge(room.Id)">Discharge</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-primary" @onclick="() => ShowAssign(room)">Assign Patient</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (showAssignModal && selectedRoom is not null)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Assign Patient to @selectedRoom.DisplayName</h5>
+                    <button type="button" class="btn-close" @onclick="() => showAssignModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Select Patient</label>
+                    <select @bind="assignPatientId" class="form-select">
+                        <option value="0">Select Patient</option>
+                        @foreach (var p in patients)
+                        {
+                            <option value="@p.Id">@p.FullName (@p.Phone)</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="() => showAssignModal = false">Cancel</button>
+                    <button class="btn btn-primary" @onclick="AssignPatient">Assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<RoomDto>? rooms;
+    private List<PatientDto> patients = [];
+    private RoomDto? selectedRoom;
+    private bool showAssignModal;
+    private int assignPatientId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        rooms = await RoomApi.GetAllAsync();
+        patients = await PatientApi.GetAllAsync();
+    }
+
+    private void ShowAssign(RoomDto room)
+    {
+        selectedRoom = room;
+        showAssignModal = true;
+        assignPatientId = 0;
+    }
+
+    private async Task AssignPatient()
+    {
+        if (selectedRoom is not null && assignPatientId > 0)
+        {
+            await RoomApi.AssignAsync(selectedRoom.Id, assignPatientId);
+            showAssignModal = false;
+            rooms = await RoomApi.GetAllAsync();
+        }
+    }
+
+    private async Task Discharge(int roomId)
+    {
+        await RoomApi.DischargeAsync(roomId);
+        rooms = await RoomApi.GetAllAsync();
+    }
+}

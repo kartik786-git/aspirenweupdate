@@ -1,0 +1,147 @@
+@attribute [Authorize]
+@page "/medical-records"
+@page "/medical-records/patient/{patientId:int}"
+@inject MedicalRecordApiClient RecordApi
+@inject PatientApiClient PatientApi
+@inject DoctorApiClient DoctorApi
+@inject NavigationManager Navigation
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Medical Records</PageTitle>
+
+<h3>Medical Records</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success">@message</div>
+}
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label class="form-label">Patient</label>
+        <select @bind="selectedPatientId" class="form-select">
+            <option value="0">Select Patient</option>
+            @foreach (var p in patients)
+            {
+                <option value="@p.Id">@p.FullName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary" @onclick="LoadRecords">Load Records</button>
+    </div>
+</div>
+
+@if (records is not null && selectedPatientId > 0)
+{
+    <button class="btn btn-success mb-3" @onclick="() => showForm = !showForm">
+        @(showForm ? "Hide Form" : "Add New Record")
+    </button>
+
+    @if (showForm)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>New Medical Record</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Doctor</label>
+                        <select @bind="newRecord.DoctorId" class="form-select">
+                            <option value="0">Select Doctor</option>
+                            @foreach (var d in doctors)
+                            {
+                                <option value="@d.Id">@d.FullName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Diagnosis *</label>
+                        <textarea @bind="newRecord.Diagnosis" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Treatment</label>
+                        <textarea @bind="newRecord.Treatment" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Prescription</label>
+                        <textarea @bind="newRecord.Prescription" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" @onclick="SaveRecord">Save Record</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    if (records.Count == 0)
+    {
+        <div class="alert alert-info">No medical records for this patient.</div>
+    }
+    else
+    {
+        @foreach (var r in records.OrderByDescending(r => r.RecordDate))
+        {
+            <div class="card mb-2">
+                <div class="card-header d-flex justify-content-between">
+                    <span>@r.RecordDate.ToShortDateString()</span>
+                    <span class="text-muted">Dr. @r.Doctor?.FullName</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Diagnosis:</strong> @r.Diagnosis</p>
+                    @if (!string.IsNullOrWhiteSpace(r.Treatment))
+                    {
+                        <p><strong>Treatment:</strong> @r.Treatment</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(r.Prescription))
+                    {
+                        <p><strong>Prescription:</strong> @r.Prescription</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(r.Notes))
+                    {
+                        <p class="text-muted">@r.Notes</p>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+
+@code {
+    [Parameter] public int PatientId { get; set; }
+
+    private List<PatientDto> patients = [];
+    private List<DoctorDto> doctors = [];
+    private List<MedicalRecordDto>? records;
+    private int selectedPatientId;
+    private bool showForm;
+    private string? message;
+    private MedicalRecordDto newRecord = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await PatientApi.GetAllAsync();
+        doctors = await DoctorApi.GetAllAsync();
+        if (PatientId > 0)
+        {
+            selectedPatientId = PatientId;
+            await LoadRecords();
+        }
+    }
+
+    private async Task LoadRecords()
+    {
+        if (selectedPatientId > 0)
+            records = await RecordApi.GetByPatientAsync(selectedPatientId);
+    }
+
+    private async Task SaveRecord()
+    {
+        newRecord.PatientId = selectedPatientId;
+        await RecordApi.CreateAsync(newRecord);
+        newRecord = new();
+        showForm = false;
+        message = "Record saved successfully!";
+        await LoadRecords();
+    }
+}

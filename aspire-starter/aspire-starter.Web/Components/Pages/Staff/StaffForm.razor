@@ -1,0 +1,88 @@
+@attribute [Authorize]
+@page "/staff/add"
+@page "/staff/edit/{id:int}"
+@inject StaffApiClient StaffApi
+@inject DepartmentApiClient DepartmentApi
+@inject NavigationManager Navigation
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>@title</PageTitle>
+
+<h3>@title</h3>
+
+<EditForm Model="staffMember" OnValidSubmit="Save" class="row g-3">
+    <DataAnnotationsValidator />
+
+    <div class="col-md-6">
+        <label class="form-label">First Name *</label>
+        <InputText @bind-Value="staffMember.FirstName" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Last Name *</label>
+        <InputText @bind-Value="staffMember.LastName" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Role</label>
+        <select @bind="staffMember.Role" class="form-select">
+            <option value="">Select Role</option>
+            <option value="Nurse">Nurse</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Admin">Admin</option>
+            <option value="Technician">Technician</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Department</label>
+        <select @bind="staffMember.DepartmentId" class="form-select">
+            <option value="0">Select Department</option>
+            @foreach (var dept in departments)
+            {
+                <option value="@dept.Id">@dept.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Salary</label>
+        <InputNumber @bind-Value="staffMember.Salary" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <InputText @bind-Value="staffMember.Phone" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <InputText @bind-Value="staffMember.Email" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/staff" class="btn btn-secondary ms-2">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    private string title = "Add Staff";
+    private StaffDto staffMember = new();
+    private List<DepartmentDto> departments = [];
+
+    [Parameter] public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await DepartmentApi.GetAllAsync();
+        if (Id > 0)
+        {
+            title = "Edit Staff";
+            var existing = await StaffApi.GetByIdAsync(Id);
+            if (existing is not null) staffMember = existing;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (Id > 0)
+            await StaffApi.UpdateAsync(Id, staffMember);
+        else
+            await StaffApi.CreateAsync(staffMember);
+        Navigation.NavigateTo("/staff");
+    }
+}

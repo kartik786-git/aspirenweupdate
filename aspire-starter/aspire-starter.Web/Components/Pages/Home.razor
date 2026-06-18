@@ -1,7 +1,122 @@
-﻿@page "/"
+@attribute [Authorize]
+@page "/"
+@inject DashboardApiClient DashboardApi
+@rendermode RenderMode.InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Hospital Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1 class="mb-4">Hospital Management Dashboard</h1>
 
-Welcome to your new app.
+@if (summary is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Patients</h6>
+                            <h2 class="mt-2 mb-0">@summary.TotalPatients</h2>
+                        </div>
+                        <i class="bi bi-people fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Active Doctors</h6>
+                            <h2 class="mt-2 mb-0">@summary.ActiveDoctors</h2>
+                        </div>
+                        <i class="bi bi-person-badge fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Today's Appointments</h6>
+                            <h2 class="mt-2 mb-0">@summary.TodayAppointments</h2>
+                        </div>
+                        <i class="bi bi-calendar-check fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Monthly Revenue</h6>
+                            <h2 class="mt-2 mb-0">$@summary.MonthlyRevenue.ToString("N2")</h2>
+                        </div>
+                        <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-secondary h-100">
+                <div class="card-body">
+                    <h6 class="card-title">Bed Occupancy</h6>
+                    <h3>@summary.OccupiedRooms / @summary.TotalRooms</h3>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-info" role="progressbar"
+                             style="width: @summary.OccupancyRate%"
+                             aria-valuenow="@summary.OccupancyRate" aria-valuemin="0" aria-valuemax="100">
+                            @summary.OccupancyRate%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-danger h-100">
+                <div class="card-body">
+                    <h6 class="card-title">Pending Bills</h6>
+                    <h3 class="text-danger">@summary.PendingBills</h3>
+                    <a href="/billing" class="btn btn-outline-danger btn-sm mt-2">View Bills</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success h-100">
+                <div class="card-body">
+                    <h6 class="card-title">Quick Actions</h6>
+                    <div class="d-grid gap-2 mt-2">
+                        <a href="/patients/add" class="btn btn-primary btn-sm">Register New Patient</a>
+                        <a href="/appointments/book" class="btn btn-success btn-sm">Book Appointment</a>
+                        <a href="/patients" class="btn btn-info btn-sm text-white">View All Patients</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private DashboardSummaryDto? summary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        summary = await DashboardApi.GetSummaryAsync();
+    }
+}

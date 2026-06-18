@@ -13,4 +13,8 @@
     <ProjectReference Include="..\aspire-starter.Web\aspire-starter.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.4.5" />
+  </ItemGroup>
+
 </Project>

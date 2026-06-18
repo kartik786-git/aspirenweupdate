@@ -1,0 +1,103 @@
+@attribute [Authorize]
+@page "/patients"
+@inject PatientApiClient PatientApi
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Patients</PageTitle>
+
+<h3 class="mb-3">Patient Management</h3>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <input @bind="searchQuery" class="form-control" placeholder="Search by name or phone..."
+               @bind:event="oninput" />
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-primary" @onclick="Search">Search</button>
+        <button class="btn btn-secondary ms-2" @onclick="ClearSearch">Clear</button>
+    </div>
+    <div class="col-md-3 text-end">
+        <a href="/patients/add" class="btn btn-success">+ New Patient</a>
+    </div>
+</div>
+
+@if (patients is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (patients.Count == 0)
+{
+    <div class="alert alert-info">No patients found.</div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Blood Group</th>
+                <th>Registered</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in patients)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td><a href="/patients/@p.Id">@p.FullName</a></td>
+                    <td>@p.Phone</td>
+                    <td>@p.Gender</td>
+                    <td>@p.BloodGroup</td>
+                    <td>@p.RegistrationDate.ToShortDateString()</td>
+                    <td>
+                        <a href="/patients/@p.Id" class="btn btn-sm btn-info text-white">View</a>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(p.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<PatientDto>? patients;
+    private string searchQuery = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        patients = await PatientApi.GetAllAsync();
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+            await LoadPatients();
+        else
+            patients = await PatientApi.SearchAsync(searchQuery);
+    }
+
+    private async Task ClearSearch()
+    {
+        searchQuery = "";
+        await LoadPatients();
+    }
+
+    private async Task Delete(int id)
+    {
+        await PatientApi.DeleteAsync(id);
+        await LoadPatients();
+    }
+}
