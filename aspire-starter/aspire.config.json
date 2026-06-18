@@ -1,0 +1,6 @@
+{
+  "appHost": {
+    "path": "aspire-starter.AppHost/aspire-starter.AppHost.csproj"
+  },
+  "channel": "stable"
+}
