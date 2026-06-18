@@ -51,7 +51,6 @@ D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\s
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\scopedcss\bundle\aspire-starter.Web.styles.css
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\scopedcss\projectbundle\aspire-starter.Web.bundle.scp.css
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\unlu0xluo6-{0}-eu7w3d5g1a-eu7w3d5g1a.gz
-D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\buniq0x74q-{0}-e9sz3gfrxa-e9sz3gfrxa.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\0rh2emvvwy-{0}-t1cqhe9u97-t1cqhe9u97.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\w8noiqedpu-{0}-c2jlpeoesf-c2jlpeoesf.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\znfps2onbr-{0}-sejl45xvog-sejl45xvog.gz
@@ -99,8 +98,6 @@ D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\c
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\pvxj8ng0at-{0}-b9228eflpl-b9228eflpl.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\y1mnaienf3-{0}-2tj1sjhksk-2tj1sjhksk.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\1x45lb54o8-{0}-boiwgh0w5b-boiwgh0w5b.gz
-D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\6zu606ankt-{0}-tstv5j8abm-tstv5j8abm.gz
-D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\x34bv54klk-{0}-zlec3fz65o-zlec3fz65o.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\staticwebassets.build.json
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\staticwebassets.build.json.cache
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\staticwebassets.development.json
@@ -120,3 +117,6 @@ D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\M
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\buniq0x74q-{0}-14638vqlds-14638vqlds.gz
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\6zu606ankt-{0}-o2pyxiacn2-o2pyxiacn2.gz
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\x34bv54klk-{0}-jnx32gptql-jnx32gptql.gz

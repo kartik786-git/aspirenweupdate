@@ -6,62 +6,84 @@
 @inject NavigationManager Navigation
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>Book Appointment</PageTitle>
+<PageTitle>Book Appointment - HospiCare</PageTitle>
 
-<h3>Book New Appointment</h3>
+<div class="page-header">
+    <h3>Book New Appointment</h3>
+    <div class="page-actions">
+        <a href="/appointments" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
 
-<EditForm Model="appointment" OnValidSubmit="Save" class="row g-3">
-    <DataAnnotationsValidator />
+<div class="card">
+    <div class="card-body">
+        <EditForm Model="appointment" OnValidSubmit="Save" class="row g-3">
+            <DataAnnotationsValidator />
 
-    <div class="col-md-6">
-        <label class="form-label">Patient</label>
-        <select @bind="appointment.PatientId" class="form-select">
-            <option value="0">Select Patient</option>
-            @foreach (var p in patients)
-            {
-                <option value="@p.Id">@p.FullName (@p.Phone)</option>
-            }
-        </select>
+            <div class="col-md-6">
+                <label class="form-label">Patient</label>
+                <select @bind="appointment.PatientId" class="form-select">
+                    <option value="0">Select Patient</option>
+                    @foreach (var p in patients)
+                    {
+                        <option value="@p.Id">@p.FullName (@p.Phone)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Doctor</label>
+                <select @bind="appointment.DoctorId" class="form-select">
+                    <option value="0">Select Doctor</option>
+                    @foreach (var d in doctors)
+                    {
+                        <option value="@d.Id">@d.FullName - @d.Specialization</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                <InputDate @bind-Value="appointment.AppointmentDate" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Start Time</label>
+                <input type="time" @bind="appointment.StartTime" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">End Time</label>
+                <input type="time" @bind="appointment.EndTime" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Reason</label>
+                <InputText @bind-Value="appointment.Reason" class="form-control" placeholder="Reason for visit..." />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Notes</label>
+                <InputText @bind-Value="appointment.Notes" class="form-control" placeholder="Additional notes..." />
+            </div>
+            <div class="col-12 pt-3 border-top">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger d-flex align-items-center gap-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        @errorMessage
+                    </div>
+                }
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Book Appointment
+                </button>
+                <a href="/appointments" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </EditForm>
     </div>
-    <div class="col-md-6">
-        <label class="form-label">Doctor</label>
-        <select @bind="appointment.DoctorId" class="form-select">
-            <option value="0">Select Doctor</option>
-            @foreach (var d in doctors)
-            {
-                <option value="@d.Id">@d.FullName - @d.Specialization</option>
-            }
-        </select>
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Date</label>
-        <InputDate @bind-Value="appointment.AppointmentDate" class="form-control" />
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Start Time</label>
-        <input type="time" @bind="appointment.StartTime" class="form-control" />
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">End Time</label>
-        <input type="time" @bind="appointment.EndTime" class="form-control" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Reason</label>
-        <InputText @bind-Value="appointment.Reason" class="form-control" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Notes</label>
-        <InputText @bind-Value="appointment.Notes" class="form-control" />
-    </div>
-    <div class="col-12">
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
-        <button type="submit" class="btn btn-primary">Book Appointment</button>
-        <a href="/appointments" class="btn btn-secondary ms-2">Cancel</a>
-    </div>
-</EditForm>
+</div>
 
 @code {
     private AppointmentDto appointment = new()

@@ -3,16 +3,24 @@
 @inject StaffApiClient StaffApi
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>Staff</PageTitle>
+<PageTitle>Staff - HospiCare</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="page-header">
     <h3>Staff Directory</h3>
-    <a href="/staff/add" class="btn btn-success">+ Add Staff</a>
+    <div class="page-actions">
+        <a href="/staff/add" class="btn btn-success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Staff
+        </a>
+    </div>
 </div>
 
-<div class="row mb-3">
-    <div class="col-md-3">
-        <select @bind="filterRole" @bind:after="LoadData" class="form-select">
+<div class="filter-bar">
+    <div>
+        <label class="form-label">Role</label>
+        <select @bind="filterRole" @bind:after="LoadData" class="form-select" style="width:auto;">
             <option value="">All Roles</option>
             <option value="Nurse">Nurse</option>
             <option value="Receptionist">Receptionist</option>
@@ -24,7 +32,7 @@
 
 @if (staff is null)
 {
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center py-4">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -32,44 +40,55 @@
 }
 else if (staff.Count == 0)
 {
-    <div class="alert alert-info">No staff found.</div>
+    <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-person-lines-fill"></i></div>
+        <h5>No staff found</h5>
+        <p class="text-muted">Add staff members to the directory.</p>
+        <a href="/staff/add" class="btn btn-primary mt-2">Add Staff</a>
+    </div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Department</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var s in staff)
-            {
-                <tr>
-                    <td>@s.FullName</td>
-                    <td>@s.Role</td>
-                    <td>@s.Department?.Name</td>
-                    <td>@s.Phone</td>
-                    <td>@s.Email</td>
-                    <td>
-                        <span class="badge @(s.IsActive ? "bg-success" : "bg-danger")">
-                            @(s.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td>
-                        <a href="/staff/edit/@s.Id" class="btn btn-sm btn-warning">Edit</a>
-                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(s.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-card">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in staff)
+                        {
+                            <tr>
+                                <td class="fw-medium">@s.FullName</td>
+                                <td><span class="badge bg-secondary">@s.Role</span></td>
+                                <td>@s.Department?.Name</td>
+                                <td>@s.Phone</td>
+                                <td>@s.Email</td>
+                                <td>
+                                    <span class="badge @(s.IsActive ? "bg-success" : "bg-danger")">
+                                        @(s.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="/staff/edit/@s.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => Delete(s.Id)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 
 @code {

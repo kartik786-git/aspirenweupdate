@@ -3,16 +3,23 @@
 @inject DoctorApiClient DoctorApi
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>Doctors</PageTitle>
+<PageTitle>Doctors - HospiCare</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="page-header">
     <h3>Doctor Directory</h3>
-    <a href="/doctors/add" class="btn btn-success">+ Add Doctor</a>
+    <div class="page-actions">
+        <a href="/doctors/add" class="btn btn-success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Doctor
+        </a>
+    </div>
 </div>
 
 @if (doctors is null)
 {
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center py-4">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -20,46 +27,57 @@
 }
 else if (doctors.Count == 0)
 {
-    <div class="alert alert-info">No doctors found.</div>
+    <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-person-badge"></i></div>
+        <h5>No doctors found</h5>
+        <p class="text-muted">Add a doctor to the directory.</p>
+        <a href="/doctors/add" class="btn btn-primary mt-2">Add Doctor</a>
+    </div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Specialization</th>
-                <th>Department</th>
-                <th>Qualification</th>
-                <th>Experience</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var d in doctors)
-            {
-                <tr>
-                    <td>@d.FullName</td>
-                    <td>@d.Specialization</td>
-                    <td>@d.Department?.Name</td>
-                    <td>@d.Qualification</td>
-                    <td>@d.ExperienceYears yrs</td>
-                    <td>@d.Phone</td>
-                    <td>
-                        <span class="badge @(d.IsActive ? "bg-success" : "bg-danger")">
-                            @(d.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td>
-                        <a href="/doctors/edit/@d.Id" class="btn btn-sm btn-warning">Edit</a>
-                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(d.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-card">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Department</th>
+                            <th>Qualification</th>
+                            <th>Experience</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in doctors)
+                        {
+                            <tr>
+                                <td class="fw-medium">@d.FullName</td>
+                                <td>@d.Specialization</td>
+                                <td>@d.Department?.Name</td>
+                                <td>@d.Qualification</td>
+                                <td>@d.ExperienceYears yrs</td>
+                                <td>@d.Phone</td>
+                                <td>
+                                    <span class="badge @(d.IsActive ? "bg-success" : "bg-danger")">
+                                        @(d.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="/doctors/edit/@d.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => Delete(d.Id)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 
 @code {

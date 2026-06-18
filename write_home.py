@@ -1,4 +1,6 @@
-@attribute [Authorize]
+import os
+
+content = r'''@attribute [Authorize]
 @page "/"
 @inject DashboardApiClient DashboardApi
 @rendermode RenderMode.InteractiveServer
@@ -154,3 +156,9 @@ else
         summary = await DashboardApi.GetSummaryAsync();
     }
 }
+'''
+
+filepath = 'aspire-starter/aspire-starter.Web/Components/Pages/Home.razor'
+with open(filepath, 'w', newline='\n') as f:
+    f.write(content)
+print(f'Written {len(content)} chars to {filepath}')

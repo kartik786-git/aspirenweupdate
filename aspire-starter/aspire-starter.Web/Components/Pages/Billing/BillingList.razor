@@ -3,43 +3,43 @@
 @inject BillingApiClient BillingApi
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>Billing</PageTitle>
+<PageTitle>Billing - HospiCare</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="page-header">
     <h3>Billing & Invoices</h3>
-    <button class="btn btn-success" @onclick="() => showNewForm = !showNewForm">
-        @(showNewForm ? "Hide Form" : "New Invoice")
-    </button>
-</div>
-
-<div class="row mb-3">
-    <div class="col-md-3">
-        <select @bind="filterStatus" @bind:after="LoadData" class="form-select">
-            <option value="">All Status</option>
-            <option value="Paid">Paid</option>
-            <option value="Unpaid">Unpaid</option>
-            <option value="Partial">Partial</option>
-        </select>
+    <div class="page-actions">
+        <button class="btn btn-success" @onclick="() => showNewForm = !showNewForm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            @(showNewForm ? "Hide Form" : "New Invoice")
+        </button>
     </div>
 </div>
 
 @if (showNewForm)
 {
-    <div class="card mb-3">
+    <div class="card mb-4">
         <div class="card-body">
-            <h5>Generate New Invoice</h5>
+            <h5 class="card-title mb-3">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Generate New Invoice
+            </h5>
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Patient ID</label>
-                    <input @bind="newBill.PatientId" class="form-control" type="number" />
+                    <input @bind="newBill.PatientId" class="form-control" type="number" placeholder="Enter patient ID" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Total Amount</label>
-                    <input @bind="newBill.TotalAmount" class="form-control" type="number" step="0.01" />
+                    <input @bind="newBill.TotalAmount" class="form-control" type="number" step="0.01" placeholder="0.00" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Paid Amount</label>
-                    <input @bind="newBill.PaidAmount" class="form-control" type="number" step="0.01" />
+                    <input @bind="newBill.PaidAmount" class="form-control" type="number" step="0.01" placeholder="0.00" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Payment Method</label>
@@ -52,16 +52,35 @@
                     </select>
                 </div>
                 <div class="col-12">
-                    <button class="btn btn-primary" @onclick="CreateBill">Generate Invoice</button>
+                    <button class="btn btn-primary" @onclick="CreateBill">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Generate Invoice
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 }
 
+<div class="filter-bar">
+    <div>
+        <label class="form-label">Status</label>
+        <select @bind="filterStatus" @bind:after="LoadData" class="form-select" style="width:auto;">
+            <option value="">All Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Partial">Partial</option>
+        </select>
+    </div>
+</div>
+
 @if (bills is null)
 {
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center py-4">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -69,44 +88,60 @@
 }
 else if (bills.Count == 0)
 {
-    <div class="alert alert-info">No bills found.</div>
+    <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-currency-dollar"></i></div>
+        <h5>No bills found</h5>
+        <p class="text-muted">Generate a new invoice to get started.</p>
+    </div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Invoice #</th>
-                <th>Patient</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Paid</th>
-                <th>Due</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var b in bills)
-            {
-                <tr>
-                    <td>@b.InvoiceNumber</td>
-                    <td>@b.Patient?.FullName</td>
-                    <td>@b.BillDate.ToShortDateString()</td>
-                    <td>$@b.TotalAmount.ToString("N2")</td>
-                    <td>$@b.PaidAmount.ToString("N2")</td>
-                    <td>$@b.DueAmount.ToString("N2")</td>
-                    <td><span class="badge @GetBadge(b.Status)">@b.Status</span></td>
-                    <td>
-                        @if (b.Status != "Paid")
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-card">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Paid</th>
+                            <th>Due</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in bills)
                         {
-                            <button class="btn btn-sm btn-success" @onclick="() => Pay(b.Id, b.DueAmount)">Pay $@b.DueAmount</button>
+                            <tr>
+                                <td class="fw-medium">@b.InvoiceNumber</td>
+                                <td>@b.Patient?.FullName</td>
+                                <td>@b.BillDate.ToShortDateString()</td>
+                                <td>$@b.TotalAmount.ToString("N2")</td>
+                                <td>$@b.PaidAmount.ToString("N2")</td>
+                                <td class="fw-semibold @(b.DueAmount > 0 ? "text-danger" : "text-success")">$@b.DueAmount.ToString("N2")</td>
+                                <td><span class="badge @GetBadge(b.Status)">@b.Status</span></td>
+                                <td class="text-end">
+                                    @if (b.Status != "Paid")
+                                    {
+                                        <button class="btn btn-sm btn-success" @onclick="() => Pay(b.Id, b.DueAmount)">
+                                            Pay $@b.DueAmount.ToString("N0")
+                                        </button>
+                                    }
+                                    @if (b.Status == "Paid")
+                                    {
+                                        <span class="text-muted" style="font-size:0.8rem;">Paid</span>
+                                    }
+                                </td>
+                            </tr>
                         }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 
 @code {

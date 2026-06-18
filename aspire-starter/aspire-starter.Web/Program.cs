@@ -122,19 +122,30 @@ public class TokenService
     public string? AccessToken { get; set; }
 }
 
-public class TokenHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
+public class TokenHandler(IHttpContextAccessor httpContextAccessor, TokenService tokenService) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        string? token = null;
+
+        // Try to get token from HTTP context (available during pre-rendering)
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext is not null)
         {
-            var token = await httpContext.GetTokenAsync("access_token");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+            token = await httpContext.GetTokenAsync("access_token");
         }
+
+        // Fall back to stored token in TokenService (available during SignalR circuit)
+        if (string.IsNullOrEmpty(token))
+        {
+            token = tokenService.AccessToken;
+        }
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
         return await base.SendAsync(request, cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
-@attribute [Authorize]
+content = r'''@attribute [Authorize]
 @page "/patients/{id:int}"
 @inject PatientApiClient PatientApi
 @inject AppointmentApiClient AppointmentApi
@@ -37,11 +37,11 @@ else
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Email</small>
-                    <span>@patient.Email</span>
+                    <span class="fw-medium">@patient.Email</span>
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Gender</small>
-                    <span>@patient.Gender</span>
+                    <span class="fw-medium">@patient.Gender</span>
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Blood Group</small>
@@ -49,19 +49,19 @@ else
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">DOB</small>
-                    <span>@patient.DateOfBirth?.ToShortDateString()</span>
+                    <span class="fw-medium">@patient.DateOfBirth?.ToShortDateString()</span>
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Registered</small>
-                    <span>@patient.RegistrationDate.ToShortDateString()</span>
+                    <span class="fw-medium">@patient.RegistrationDate.ToShortDateString()</span>
                 </div>
                 <div class="col-md-6">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Emergency Contact</small>
-                    <span>@patient.EmergencyContactName (@patient.EmergencyContactPhone)</span>
+                    <span class="fw-medium">@patient.EmergencyContactName (@patient.EmergencyContactPhone)</span>
                 </div>
                 <div class="col-12">
                     <small class="text-muted d-block text-uppercase" style="font-size:0.75rem;font-weight:600;">Address</small>
-                    <span>@patient.Address</span>
+                    <span class="fw-medium">@patient.Address</span>
                 </div>
             </div>
         </div>
@@ -69,13 +69,13 @@ else
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <button class="nav-link @(activeTab == "appointments" ? "active" : "")" @onclick='(() => activeTab = "appointments")'>Appointments</button>
+            <button class="nav-link @(activeTab == "appointments" ? "active" : "")" @onclick="(() => activeTab = "appointments")">Appointments</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link @(activeTab == "bills" ? "active" : "")" @onclick='(() => activeTab = "bills")'>Bills</button>
+            <button class="nav-link @(activeTab == "bills" ? "active" : "")" @onclick="(() => activeTab = "bills")">Bills</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link @(activeTab == "records" ? "active" : "")" @onclick='(() => activeTab = "records")'>Medical Records</button>
+            <button class="nav-link @(activeTab == "records" ? "active" : "")" @onclick="(() => activeTab = "records")">Medical Records</button>
         </li>
     </ul>
 
@@ -186,19 +186,4 @@ else
         }
     }
 
-    private static string GetStatusBadge(string status) => status switch
-    {
-        "Scheduled" => "bg-primary",
-        "Completed" => "bg-success",
-        "Cancelled" => "bg-danger",
-        _ => "bg-secondary"
-    };
-
-    private static string GetBillStatusBadge(string status) => status switch
-    {
-        "Paid" => "bg-success",
-        "Partial" => "bg-warning",
-        "Unpaid" => "bg-danger",
-        _ => "bg-secondary"
-    };
-}
+    private static string GetStatusBadge(stri

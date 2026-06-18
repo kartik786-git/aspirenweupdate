@@ -5,66 +5,82 @@
 @inject NavigationManager Navigation
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>@title</PageTitle>
+<PageTitle>@title - HospiCare</PageTitle>
 
-<h3>@title</h3>
+<div class="page-header">
+    <h3>@title</h3>
+    <div class="page-actions">
+        <a href="/patients" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
 
-<EditForm Model="patient" OnValidSubmit="Save" class="row g-3">
-    <DataAnnotationsValidator />
+<div class="card">
+    <div class="card-body">
+        <EditForm Model="patient" OnValidSubmit="Save" class="row g-3">
+            <DataAnnotationsValidator />
 
-    <div class="col-md-6">
-        <label class="form-label">First Name *</label>
-        <InputText @bind-Value="patient.FirstName" class="form-control" />
-        <ValidationMessage For="() => patient.FirstName" />
+            <div class="col-md-6">
+                <label class="form-label">First Name *</label>
+                <InputText @bind-Value="patient.FirstName" class="form-control" />
+                <ValidationMessage For="() => patient.FirstName" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name *</label>
+                <InputText @bind-Value="patient.LastName" class="form-control" />
+                <ValidationMessage For="() => patient.LastName" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date of Birth</label>
+                <InputDate @bind-Value="patient.DateOfBirth" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Gender</label>
+                <select @bind="patient.Gender" class="form-select">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Blood Group</label>
+                <InputText @bind-Value="patient.BloodGroup" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Phone *</label>
+                <InputText @bind-Value="patient.Phone" class="form-control" />
+                <ValidationMessage For="() => patient.Phone" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="patient.Email" class="form-control" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Address</label>
+                <InputTextArea @bind-Value="patient.Address" class="form-control" rows="2" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Emergency Contact Name</label>
+                <InputText @bind-Value="patient.EmergencyContactName" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Emergency Contact Phone</label>
+                <InputText @bind-Value="patient.EmergencyContactPhone" class="form-control" />
+            </div>
+            <div class="col-12 pt-3 border-top">
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save
+                </button>
+                <a href="/patients" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </EditForm>
     </div>
-    <div class="col-md-6">
-        <label class="form-label">Last Name *</label>
-        <InputText @bind-Value="patient.LastName" class="form-control" />
-        <ValidationMessage For="() => patient.LastName" />
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Date of Birth</label>
-        <InputDate @bind-Value="patient.DateOfBirth" class="form-control" />
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Gender</label>
-        <select @bind="patient.Gender" class="form-select">
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Blood Group</label>
-        <InputText @bind-Value="patient.BloodGroup" class="form-control" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Phone *</label>
-        <InputText @bind-Value="patient.Phone" class="form-control" />
-        <ValidationMessage For="() => patient.Phone" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Email</label>
-        <InputText @bind-Value="patient.Email" class="form-control" />
-    </div>
-    <div class="col-12">
-        <label class="form-label">Address</label>
-        <InputTextArea @bind-Value="patient.Address" class="form-control" rows="2" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Emergency Contact Name</label>
-        <InputText @bind-Value="patient.EmergencyContactName" class="form-control" />
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Emergency Contact Phone</label>
-        <InputText @bind-Value="patient.EmergencyContactPhone" class="form-control" />
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="/patients" class="btn btn-secondary ms-2">Cancel</a>
-    </div>
-</EditForm>
+</div>
 
 @code {
     private string title = "Register New Patient";

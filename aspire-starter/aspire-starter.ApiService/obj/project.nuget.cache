@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "b9lkjw8Za+I=",
+  "dgSpecHash": "5TtBpxZ+l4w=",
   "success": true,
   "projectFilePath": "D:\\Project\\aspirenweupdate\\aspire-starter\\aspire-starter.ApiService\\aspire-starter.ApiService.csproj",
   "expectedPackageFiles": [
@@ -62,6 +62,7 @@
     "C:\\Users\\karti\\.nuget\\packages\\polly.core\\8.4.2\\polly.core.8.4.2.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\polly.extensions\\8.4.2\\polly.extensions.8.4.2.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\polly.ratelimiting\\8.4.2\\polly.ratelimiting.8.4.2.nupkg.sha512",
+    "C:\\Users\\karti\\.nuget\\packages\\scalar.aspnetcore\\2.16.4\\scalar.aspnetcore.2.16.4.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\system.composition\\9.0.0\\system.composition.9.0.0.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\system.composition.attributedmodel\\9.0.0\\system.composition.attributedmodel.9.0.0.nupkg.sha512",

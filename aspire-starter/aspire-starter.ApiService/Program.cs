@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using aspire_starter.ApiService.Data;
 using aspire_starter.ApiService.Endpoints;
 
@@ -35,6 +36,11 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("HospiCare — Hospital Management API")
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
 }
 
 using (var scope = app.Services.CreateScope())

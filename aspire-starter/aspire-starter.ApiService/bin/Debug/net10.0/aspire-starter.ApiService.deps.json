@@ -13,6 +13,7 @@
           "Microsoft.AspNetCore.OpenApi": "10.0.8",
           "Microsoft.EntityFrameworkCore.Design": "10.0.8",
           "Microsoft.EntityFrameworkCore.SqlServer": "10.0.8",
+          "Scalar.AspNetCore": "2.16.4",
           "aspire-starter.ServiceDefaults": "1.0.0"
         },
         "runtime": {
@@ -1029,6 +1030,15 @@
           }
         }
       },
+      "Scalar.AspNetCore/2.16.4": {
+        "runtime": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "assemblyVersion": "2.16.4.0",
+            "fileVersion": "2.16.4.0",
+            "localPath": "Scalar.AspNetCore.dll"
+          }
+        }
+      },
       "System.CodeDom/6.0.0": {
         "runtime": {
           "lib/net6.0/System.CodeDom.dll": {
@@ -1571,6 +1581,13 @@
       "sha512": "sha512-ehTImQ/eUyO07VYW2WvwSmU9rRH200SKJ/3jku9rOkyWE0A2JxNFmAVms8dSn49QLSjmjFRRSgfNyOgr/2PSmA==",
       "path": "polly.ratelimiting/8.4.2",
       "hashPath": "polly.ratelimiting.8.4.2.nupkg.sha512"
+    },
+    "Scalar.AspNetCore/2.16.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZDD3CHXn1OR4yHQ55NcXsU+aRzSIc1kwkpgPVM9LaK0XKuEzRqZWZ/4WS9tLI3dur6OMlcpXjGIDk/Pe3fniXQ==",
+      "path": "scalar.aspnetcore/2.16.4",
+      "hashPath": "scalar.aspnetcore.2.16.4.nupkg.sha512"
     },
     "System.CodeDom/6.0.0": {
       "type": "package",

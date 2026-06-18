@@ -3,69 +3,90 @@
 @inject PatientApiClient PatientApi
 @rendermode RenderMode.InteractiveServer
 
-<PageTitle>Patients</PageTitle>
+<PageTitle>Patients - HospiCare</PageTitle>
 
-<h3 class="mb-3">Patient Management</h3>
-
-<div class="row mb-3">
-    <div class="col-md-6">
-        <input @bind="searchQuery" class="form-control" placeholder="Search by name or phone..."
-               @bind:event="oninput" />
-    </div>
-    <div class="col-md-3">
-        <button class="btn btn-primary" @onclick="Search">Search</button>
-        <button class="btn btn-secondary ms-2" @onclick="ClearSearch">Clear</button>
-    </div>
-    <div class="col-md-3 text-end">
-        <a href="/patients/add" class="btn btn-success">+ New Patient</a>
+<div class="page-header">
+    <h3>Patient Management</h3>
+    <div class="page-actions">
+        <a href="/patients/add" class="btn btn-success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Patient
+        </a>
     </div>
 </div>
 
-@if (patients is null)
-{
-    <div class="d-flex justify-content-center">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+<div class="card">
+    <div class="card-body">
+        <div class="action-bar">
+            <div class="search-group">
+                <input @bind="searchQuery" class="form-control" placeholder="Search by name or phone..."
+                       @bind:event="oninput" />
+                <button class="btn btn-primary" @onclick="Search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    Search
+                </button>
+                <button class="btn btn-secondary" @onclick="ClearSearch">Clear</button>
+            </div>
         </div>
+
+        @if (patients is null)
+        {
+            <div class="d-flex justify-content-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (patients.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon"><i class="bi bi-people"></i></div>
+                <h5>No patients found</h5>
+                <p class="text-muted">Register a new patient to get started.</p>
+                <a href="/patients/add" class="btn btn-primary mt-2">Register New Patient</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-card">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Gender</th>
+                            <th>Blood Group</th>
+                            <th>Registered</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in patients)
+                        {
+                            <tr>
+                                <td>@p.Id</td>
+                                <td><a href="/patients/@p.Id" class="fw-medium">@p.FullName</a></td>
+                                <td>@p.Phone</td>
+                                <td>@p.Gender</td>
+                                <td><span class="badge bg-secondary">@p.BloodGroup</span></td>
+                                <td>@p.RegistrationDate.ToShortDateString()</td>
+                                <td class="text-end">
+                                    <a href="/patients/@p.Id" class="btn btn-sm btn-info text-white">View</a>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => Delete(p.Id)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-}
-else if (patients.Count == 0)
-{
-    <div class="alert alert-info">No patients found.</div>
-}
-else
-{
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Gender</th>
-                <th>Blood Group</th>
-                <th>Registered</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in patients)
-            {
-                <tr>
-                    <td>@p.Id</td>
-                    <td><a href="/patients/@p.Id">@p.FullName</a></td>
-                    <td>@p.Phone</td>
-                    <td>@p.Gender</td>
-                    <td>@p.BloodGroup</td>
-                    <td>@p.RegistrationDate.ToShortDateString()</td>
-                    <td>
-                        <a href="/patients/@p.Id" class="btn btn-sm btn-info text-white">View</a>
-                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(p.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+</div>
 
 @code {
     private List<PatientDto>? patients;
