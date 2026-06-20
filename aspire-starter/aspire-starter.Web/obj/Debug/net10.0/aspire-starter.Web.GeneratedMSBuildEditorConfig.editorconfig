@@ -26,10 +26,6 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/LoginDisplay.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTG9naW5EaXNwbGF5LnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Pages/Appointments/AppointmentForm.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBcHBvaW50bWVudHNcQXBwb2ludG1lbnRGb3JtLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -97,6 +93,10 @@ build_metadata.AdditionalFiles.CssScope =
 [D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/LoginDisplay.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTG9naW5EaXNwbGF5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-24yv11yxki
 
 [D:/Project/aspirenweupdate/aspire-starter/aspire-starter.Web/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==

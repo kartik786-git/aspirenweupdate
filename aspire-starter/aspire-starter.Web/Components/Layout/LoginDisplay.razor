@@ -2,12 +2,52 @@
 
 <AuthorizeView>
     <Authorized>
-        <span class="me-2 text-light">
-            <i class="bi bi-person-circle"></i> @context.User.Identity?.Name
-        </span>
-        <a href="/auth/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        <div class="user-profile">
+            <div class="user-avatar">
+                @GetInitials(context)
+            </div>
+            <div class="user-info">
+                <span class="user-name">@context.User.Identity?.Name</span>
+                <span class="user-role">@GetUserRole(context)</span>
+            </div>
+            <a href="/auth/logout" class="logout-btn" title="Logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+            </a>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a href="/auth/login?returnUrl=@Uri.EscapeDataString(Navigation.Uri)" class="btn btn-outline-light btn-sm">Login</a>
+        <a href="/auth/login?returnUrl=@Uri.EscapeDataString(Navigation.Uri)" class="login-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10 17 15 12 10 7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Sign In
+        </a>
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+    private string GetInitials(AuthenticationState state)
+    {
+        var name = state.User.Identity?.Name;
+        if (string.IsNullOrEmpty(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return name[..1].ToUpper();
+    }
+
+    private string GetUserRole(AuthenticationState state)
+    {
+        if (state.User.IsInRole("admin")) return "Administrator";
+        if (state.User.IsInRole("doctor")) return "Doctor";
+        if (state.User.IsInRole("nurse")) return "Nurse";
+        if (state.User.IsInRole("receptionist")) return "Receptionist";
+        return "Staff";
+    }
+}
