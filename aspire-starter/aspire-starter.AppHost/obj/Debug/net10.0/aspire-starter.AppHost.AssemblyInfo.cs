@@ -23,7 +23,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("aspire-starter.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5575316c3b4a7fbf731be3d45b7fc2829b42b5c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e9759900f4a0248dff6cd63d9b12769904a9ed8")]
 [assembly: System.Reflection.AssemblyProductAttribute("aspire-starter.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("aspire-starter.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
