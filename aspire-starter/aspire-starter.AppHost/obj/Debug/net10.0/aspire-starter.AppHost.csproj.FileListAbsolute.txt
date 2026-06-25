@@ -178,3 +178,17 @@ D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\obj\Debug\net10
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\obj\Debug\net10.0\aspire-starter.AppHost.pdb
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\obj\Debug\net10.0\aspire-starter.AppHost.genruntimeconfig.cache
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\obj\Debug\net10.0\ref\aspire-starter.AppHost.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\Aspire.Hosting.DevTunnels.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\cs\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\de\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\es\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\fr\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\it\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\ja\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\ko\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\pl\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\pt-BR\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\ru\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\tr\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\zh-Hans\Aspire.Hosting.DevTunnels.resources.dll
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.AppHost\bin\Debug\net10.0\zh-Hant\Aspire.Hosting.DevTunnels.resources.dll

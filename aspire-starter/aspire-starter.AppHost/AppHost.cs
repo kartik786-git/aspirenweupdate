@@ -20,6 +20,11 @@ var apiService = builder.AddProject<Projects.aspire_starter_ApiService>("apiserv
     .WaitFor(sqlServer)
     .WaitFor(keycloak);
 
+// Expose the API via DevTunnel for external apps (e.g., mobile apps)
+var apiTunnel = builder.AddDevTunnel("api-tunnel")
+    .WithReference(apiService)
+    .WithAnonymousAccess();
+
 builder.AddProject<Projects.aspire_starter_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(apiService)

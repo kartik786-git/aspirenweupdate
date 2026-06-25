@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "P9sxc/p4/5M=",
+  "dgSpecHash": "rimFj+ampW0=",
   "success": true,
   "projectFilePath": "D:\\Project\\aspirenweupdate\\aspire-starter\\aspire-starter.AppHost\\aspire-starter.AppHost.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\karti\\.nuget\\packages\\aspire.dashboard.sdk.win-x64\\13.4.5\\aspire.dashboard.sdk.win-x64.13.4.5.nupkg.sha512",
-    "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting\\13.4.5\\aspire.hosting.13.4.5.nupkg.sha512",
+    "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting\\13.4.6\\aspire.hosting.13.4.6.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting.apphost\\13.4.5\\aspire.hosting.apphost.13.4.5.nupkg.sha512",
+    "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting.devtunnels\\13.4.6\\aspire.hosting.devtunnels.13.4.6.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting.orchestration.win-x64\\13.4.5\\aspire.hosting.orchestration.win-x64.13.4.5.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\aspire.hosting.sqlserver\\13.4.5\\aspire.hosting.sqlserver.13.4.5.nupkg.sha512",
     "C:\\Users\\karti\\.nuget\\packages\\aspnetcore.healthchecks.sqlserver\\9.0.0\\aspnetcore.healthchecks.sqlserver.9.0.0.nupkg.sha512",

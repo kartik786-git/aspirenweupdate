@@ -63,6 +63,10 @@
               "version": "[13.4.5, )",
               "autoReferenced": true
             },
+            "Aspire.Hosting.DevTunnels": {
+              "target": "Package",
+              "version": "[13.4.6, )"
+            },
             "Aspire.Hosting.Orchestration.win-x64": {
               "target": "Package",
               "version": "[13.4.5, )",
