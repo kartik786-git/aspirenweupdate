@@ -38,6 +38,21 @@
       "serviceAccountsEnabled": true,
       "bearerOnly": true,
       "fullScopeAllowed": true
+    },
+    {
+      "clientId": "hospital-mobile",
+      "name": "Hospital Mobile App",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:5160/*",
+        "https://winchetechnologies.co.uk/tools/oauth_redirect",
+        "hospital-auth://callback"
+      ],
+      "webOrigins": ["http://localhost:5160"],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "fullScopeAllowed": true
     }
   ],
   "users": [

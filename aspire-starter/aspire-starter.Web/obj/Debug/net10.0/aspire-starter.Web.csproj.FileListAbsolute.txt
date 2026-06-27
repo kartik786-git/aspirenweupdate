@@ -117,7 +117,7 @@ D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\M
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
-D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\buniq0x74q-{0}-14638vqlds-14638vqlds.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\scopedcss\Components\Layout\LoginDisplay.razor.rz.scp.css
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\6zu606ankt-{0}-qopamayfwo-qopamayfwo.gz
 D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\x34bv54klk-{0}-enddtbvszx-enddtbvszx.gz
+D:\Project\aspirenweupdate\aspire-starter\aspire-starter.Web\obj\Debug\net10.0\compressed\buniq0x74q-{0}-berrx83lrn-berrx83lrn.gz

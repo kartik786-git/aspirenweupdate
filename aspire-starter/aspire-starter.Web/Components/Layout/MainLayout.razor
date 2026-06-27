@@ -2,6 +2,9 @@
 @inherits LayoutComponentBase
 @inject IHttpContextAccessor HttpContextAccessor
 @inject TokenService TokenService
+@inject PersistentComponentState PersistentComponentState
+@inject AuthEventService AuthEventService
+@inject NavigationManager Navigation
 
 <div class="layout-wrapper">
     <aside class="sidebar @(_sidebarOpen ? "open" : "")">
@@ -55,11 +58,96 @@
 
         <main class="content-area">
             <article class="content-inner">
-                @Body
+                <ErrorBoundary>
+                    <ChildContent>
+                        @Body
+                    </ChildContent>
+                    <ErrorContent>
+                        <div class="d-flex justify-content-center align-items-center" style="min-height:300px;">
+                            <div class="text-center" style="max-width:360px;">
+                                <div class="mb-3" style="color:var(--gray-300);">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="12"/>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <h5 style="color:var(--gray-700);font-weight:600;margin-bottom:0.5rem;">Unable to Load Page</h5>
+                                <p style="color:var(--gray-500);font-size:0.875rem;margin-bottom:0.25rem;line-height:1.5;">
+                                    The page could not be loaded due to a temporary issue.
+                                </p>
+                                <p style="color:var(--gray-400);font-size:0.8rem;margin-bottom:1.25rem;">
+                                    This usually happens when your session has expired or the server is unreachable.
+                                    Try refreshing the page or signing in again.
+                                </p>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="/auth/reauth?returnUrl=@Uri.EscapeDataString(Navigation.Uri)" class="btn btn-primary btn-sm">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                            <polyline points="10 17 15 12 10 7"/>
+                                            <line x1="15" y1="12" x2="3" y2="12"/>
+                                        </svg>
+                                        Sign In
+                                    </a>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                            <polyline points="23 4 23 10 17 10"/>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                        </svg>
+                                        Refresh Page
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </ErrorContent>
+                </ErrorBoundary>
             </article>
         </main>
     </div>
 </div>
+
+@if (_reauthState != ReauthState.Idle)
+{
+    <div class="reauth-overlay">
+        <div class="reauth-card">
+            <div class="mb-4">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h4 class="mb-2">Session Expired</h4>
+            <p class="reauth-message">
+                @if (_reauthState == ReauthState.Failed)
+                {
+                    <span>Your session has expired. Please sign in again to continue using HospiCare.</span>
+                }
+                else
+                {
+                    <span>Redirecting to login...</span>
+                }
+            </p>
+            <div class="reauth-actions">
+                <a href="/auth/reauth?returnUrl=@Uri.EscapeDataString(Navigation.Uri)" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                        <polyline points="10 17 15 12 10 7"/>
+                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    Sign In Again
+                </a>
+                <a href="/auth/logout" class="btn btn-outline-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+}
 
 <div id="blazor-error-ui">
     <span>An unhandled error has occurred.</span>
@@ -69,11 +157,27 @@
 
 @code {
     private bool _sidebarOpen = false;
+    private ReauthState _reauthState = ReauthState.Idle;
+
+    private const string AccessTokenKey = "AccessToken";
+    private const string RefreshTokenKey = "RefreshToken";
 
     protected override async Task OnInitializedAsync()
     {
-        // Capture access token during initial HTTP request (pre-rendering)
-        // so it's available for API calls during SignalR circuit operations
+        // 1. During interactive rendering (SignalR circuit), restore tokens that were
+        //    persisted by App.razor during prerendering
+        var restored = PersistentComponentState.TryTakeFromJson<string>(AccessTokenKey, out var accessToken);
+        PersistentComponentState.TryTakeFromJson<string>(RefreshTokenKey, out var refreshToken);
+
+        if (restored && !string.IsNullOrEmpty(accessToken))
+        {
+            TokenService.AccessToken = accessToken;
+            if (!string.IsNullOrEmpty(refreshToken))
+                TokenService.RefreshToken = refreshToken;
+            return;
+        }
+
+        // 2. During prerendering (HTTP request), capture tokens from the cookie
         if (string.IsNullOrEmpty(TokenService.AccessToken))
         {
             var httpContext = HttpContextAccessor.HttpContext;
@@ -84,7 +188,24 @@
                 {
                     TokenService.AccessToken = token;
                 }
+
+                var rToken = await httpContext.GetTokenAsync("refresh_token");
+                if (!string.IsNullOrEmpty(rToken))
+                {
+                    TokenService.RefreshToken = rToken;
+                }
             }
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Check the flag after each render — if the TokenHandler detected a 401 during
+        // prerendering or the SignalR circuit, show the overlay on the next render cycle.
+        if (AuthEventService.ReauthenticationRequired && _reauthState == ReauthState.Idle)
+        {
+            _reauthState = ReauthState.Failed;
+            StateHasChanged();
         }
     }
 
@@ -92,4 +213,6 @@
     {
         _sidebarOpen = !_sidebarOpen;
     }
+
+    private enum ReauthState { Idle, Failed, Redirecting }
 }

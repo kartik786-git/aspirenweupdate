@@ -20,3 +20,41 @@
 </body>
 
 </html>
+
+@inject PersistentComponentState PersistentComponentState
+@inject IHttpContextAccessor HttpContextAccessor
+
+@code {
+    private const string AccessTokenKey = "AccessToken";
+    private const string RefreshTokenKey = "RefreshToken";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // During prerendering: capture tokens from the cookie and persist them
+        // so they survive the transition to the SignalR circuit for interactive rendering.
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext is not null)
+        {
+            var accessToken = await httpContext.GetTokenAsync("access_token");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                PersistentComponentState.RegisterOnPersisting(() =>
+                {
+                    PersistentComponentState.PersistAsJson(AccessTokenKey, accessToken);
+                    return Task.CompletedTask;
+                });
+            }
+
+            var refreshToken = await httpContext.GetTokenAsync("refresh_token");
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                PersistentComponentState.RegisterOnPersisting(() =>
+                {
+                    PersistentComponentState.PersistAsJson(RefreshTokenKey, refreshToken);
+                    return Task.CompletedTask;
+                });
+            }
+        }
+    }
+}
+

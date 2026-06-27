@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -50,6 +51,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddOutputCache();
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<AuthEventService>();
 builder.Services.AddTransient<TokenHandler>();
 
 builder.Services.AddHttpClient<WeatherApiClient>(client =>
@@ -120,33 +122,155 @@ app.Run();
 public class TokenService
 {
     public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
 }
 
-public class TokenHandler(IHttpContextAccessor httpContextAccessor, TokenService tokenService) : DelegatingHandler
+/// Scoped service shared by TokenHandler and MainLayout.
+/// TokenHandler sets <see cref="ReauthenticationRequired"/> to true when the
+/// API returns a 401 and token refresh fails. MainLayout reads the flag at
+/// render time to show a global "Session Expired" overlay over any page.
+public class AuthEventService
+{
+    public bool ReauthenticationRequired { get; set; }
+}
+
+public class TokenHandler(
+    IHttpContextAccessor httpContextAccessor,
+    TokenService tokenService,
+    IConfiguration configuration,
+    AuthEventService authEventService) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        string? token = null;
-
-        // Try to get token from HTTP context (available during pre-rendering)
-        var httpContext = httpContextAccessor.HttpContext;
-        if (httpContext is not null)
-        {
-            token = await httpContext.GetTokenAsync("access_token");
-        }
-
-        // Fall back to stored token in TokenService (available during SignalR circuit)
-        if (string.IsNullOrEmpty(token))
-        {
-            token = tokenService.AccessToken;
-        }
+        var token = await GetValidAccessTokenAsync(cancellationToken);
 
         if (!string.IsNullOrEmpty(token))
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        return await base.SendAsync(request, cancellationToken);
+        var response = await base.SendAsync(request, cancellationToken);
+
+        // If the API rejected the token, set the global auth-error flag.
+        // MainLayout reads this flag at render time and shows a "Session Expired"
+        // overlay over any page content.
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            authEventService.ReauthenticationRequired = true;
+        }
+
+        return response;
+    }
+
+    private async Task<string?> GetValidAccessTokenAsync(CancellationToken cancellationToken)
+    {
+        string? accessToken;
+        string? refreshToken;
+
+        var httpContext = httpContextAccessor.HttpContext;
+
+        if (httpContext is not null)
+        {
+            // Prerendering — get tokens from auth cookie
+            accessToken = await httpContext.GetTokenAsync("access_token");
+            refreshToken = await httpContext.GetTokenAsync("refresh_token");
+        }
+        else
+        {
+            // SignalR circuit — get tokens from TokenService
+            accessToken = tokenService.AccessToken;
+            refreshToken = tokenService.RefreshToken;
+        }
+
+        if (string.IsNullOrEmpty(accessToken))
+            return null;
+
+        // Return immediately if the token is still valid
+        if (!IsTokenExpired(accessToken))
+            return accessToken;
+
+        // Token is expired — try to refresh with the stored refresh token
+        if (string.IsNullOrEmpty(refreshToken))
+            return null;
+
+        var authority = configuration["Keycloak:Authority"] ?? "http://localhost:8082";
+        var tokenEndpoint = $"{authority}/realms/hospital-hms/protocol/openid-connect/token";
+
+        try
+        {
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            var body = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["client_id"] = "hospital-web",
+                ["grant_type"] = "refresh_token",
+                ["refresh_token"] = refreshToken,
+            });
+
+            var response = await client.PostAsync(tokenEndpoint, body, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var json = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(
+                cancellationToken: cancellationToken);
+            if (json is null) return null;
+
+            var newAccessToken = json.TryGetValue("access_token", out var atEl) ? atEl.GetString() : null;
+            var newRefreshToken = json.TryGetValue("refresh_token", out var rtEl) ? rtEl.GetString() : null;
+
+            if (string.IsNullOrEmpty(newAccessToken)) return null;
+
+            // Update TokenService (used by both prerendering and SignalR circuit)
+            tokenService.AccessToken = newAccessToken;
+            if (newRefreshToken is not null)
+                tokenService.RefreshToken = newRefreshToken;
+
+            // If HttpContext is available, also update the auth cookie
+            if (httpContext is not null)
+            {
+                var authResult = await httpContext.AuthenticateAsync();
+                if (authResult.Succeeded && authResult.Properties is not null)
+                {
+                    authResult.Properties.UpdateTokenValue("access_token", newAccessToken);
+                    if (newRefreshToken is not null)
+                        authResult.Properties.UpdateTokenValue("refresh_token", newRefreshToken);
+
+                    await httpContext.SignInAsync(authResult.Principal!, authResult.Properties);
+                }
+            }
+
+            return newAccessToken;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool IsTokenExpired(string token, int bufferSeconds = 60)
+    {
+        try
+        {
+            var parts = token.Split('.');
+            if (parts.Length < 2) return true;
+
+            var payload = parts[1];
+            var padding = 4 - payload.Length % 4;
+            if (padding != 4)
+                payload += new string('=', padding);
+
+            var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(payload));
+            using var doc = JsonDocument.Parse(decoded);
+            if (!doc.RootElement.TryGetProperty("exp", out var expElement))
+                return true;
+
+            var exp = expElement.GetInt64();
+            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            return now >= exp - bufferSeconds;
+        }
+        catch
+        {
+            return true; // Assume expired if we can't decode
+        }
     }
 }
 
@@ -162,12 +286,24 @@ public static class AuthEndpoints
             });
         });
 
-        group.MapGet("/logout", async (HttpContext httpContext) =>
+        group.MapGet("/logout", async (HttpContext httpContext, string? returnUrl) =>
         {
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
             {
-                RedirectUri = "/"
+                RedirectUri = "/auth/login?returnUrl=" + Uri.EscapeDataString(returnUrl ?? "/")
+            });
+        });
+
+        /// Force re-authentication: clear the stale cookie and immediately challenge
+        /// for a fresh login. Used when the access token is expired and can't be refreshed.
+        group.MapGet("/reauth", async (HttpContext httpContext, string? returnUrl) =>
+        {
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            await httpContext.ChallengeAsync(new AuthenticationProperties
+            {
+                RedirectUri = returnUrl ?? "/"
             });
         });
 

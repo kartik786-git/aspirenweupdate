@@ -20,7 +20,7 @@
     </div>
 </div>
 
-@if (summary is null)
+@if (_loading)
 {
     <div class="d-flex justify-content-center py-5">
         <div class="spinner-border text-primary" role="status">
@@ -148,9 +148,12 @@ else
 
 @code {
     private DashboardSummaryDto? summary;
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        _loading = true;
         summary = await DashboardApi.GetSummaryAsync();
+        _loading = false;
     }
 }

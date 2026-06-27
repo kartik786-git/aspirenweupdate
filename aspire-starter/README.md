@@ -1,29 +1,31 @@
 # 🏥 HospiCare — Hospital Management System
 
-A comprehensive, modern hospital management system built with **.NET Aspire 13.4**, **Blazor Interactive Server**, **Keycloak authentication**, and **SQL Server**.
+A comprehensive, modern hospital management system built with **.NET Aspire 13.4**, **Blazor Interactive Server**, **Flutter Mobile App**, **Keycloak authentication**, and **SQL Server**.
+
+---
 
 ## 📋 Overview
 
-HospiCare is a full-stack hospital management application that provides a unified dashboard for managing patients, doctors, appointments, medical records, billing, rooms/beds, departments, and staff. It leverages .NET Aspire for cloud-native orchestration, service discovery, and observability.
+HospiCare is a full-stack hospital management application that provides a unified dashboard for managing patients, doctors, appointments, medical records, billing, rooms/beds, departments, and staff. It leverages .NET Aspire for cloud-native orchestration, service discovery, and observability — with **two frontends**: a **Blazor Web App** (desktop/server) and a **Flutter Mobile App** (Android/Web).
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  .NET Aspire AppHost                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │
-│  │  Keycloak    │  │  API Service │  │  Web App   │ │
-│  │  (Port 8082) │  │  (Backend)   │  │  (Frontend)│ │
-│  │  Auth Server │◄─┤  REST APIs   │◄─┤  Blazor UI │ │
-│  └──────────────┘  └──┬───────────┘  └────────────┘ │
-│                       │                              │
-│              ┌────────▼────────┐                     │
-│              │   SQL Server    │                     │
-│              │  (hospital-db)  │                     │
-│              └─────────────────┘                     │
-└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                     .NET Aspire AppHost                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────┐  ┌───────────┐│
+│  │  Keycloak    │  │  API Service │  │  Web App   │  │  Flutter  ││
+│  │  (Port 8082) │  │  (Backend)   │  │  (Blazor)  │  │  Mobile   ││
+│  │  Auth Server │◄─┤  REST APIs   │◄─┤  Frontend  │  │  (Android)││
+│  └──────────────┘  └──┬───────────┘  └────────────┘  └───────────┘│
+│                       │                              ┌───────────┐│
+│              ┌────────▼────────┐                     │  Flutter  ││
+│              │   SQL Server    │                     │   Web     ││
+│              │  (hospital-db)  │                     │  (Port    ││
+│              └─────────────────┘                     │   5160)   ││
+└──────────────────────────────────────────────────────┴───────────┘
 ```
 
 ### Projects
@@ -34,6 +36,7 @@ HospiCare is a full-stack hospital management application that provides a unifie
 | **ApiService** | REST API — handles all business logic and data access | .NET 10 |
 | **Web** | Blazor Interactive Server UI — modern responsive frontend | .NET 10 |
 | **ServiceDefaults** | Shared Aspire defaults — OpenTelemetry, health checks, resilience | .NET 10 |
+| **Flutter App** | Cross-platform mobile app for Android and Web | Flutter 3.10+ |
 
 ---
 
@@ -61,6 +64,7 @@ HospiCare is a full-stack hospital management application that provides a unifie
 - **Role-based access** — Admin, Doctor, Nurse, Receptionist roles
 - **JWT Bearer tokens** for API authorization
 - **Token propagation** from Blazor to API via `TokenHandler`
+- **Mobile ROPC flow** — Direct username/password auth for mobile clients
 
 ---
 
@@ -73,6 +77,7 @@ HospiCare is a full-stack hospital management application that provides a unifie
 | [.NET SDK](https://dotnet.microsoft.com/download) | 10.0+ | Build and run the application |
 | [Aspire CLI](https://learn.microsoft.com/en-us/dotnet/aspire/) | 13.4+ | Application orchestration |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Latest | Runs Keycloak and SQL Server containers |
+| [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.10+ | Build the mobile app (optional) |
 | [Node.js](https://nodejs.org/) (optional) | 18+ | Only needed for Aspire dashboard |
 
 ### 1️⃣ Clone & Restore
@@ -96,19 +101,28 @@ dotnet user-secrets set "ConnectionStrings:hospitalDb" "Server=localhost;Databas
 aspire start
 ```
 
+Or with the .NET CLI:
+
+```bash
+dotnet run --project aspire-starter.AppHost
+```
+
 This starts all services via the Aspire orchestrator:
 1. **SQL Server** — Database container with persistent volume
 2. **Keycloak** — Authentication server on port **8082** (auto-imports realm config)
 3. **API Service** — Backend REST API
 4. **Web Frontend** — Blazor UI
+5. **Flutter Web** — Mobile app running as web on port **5160** (optional)
 
 ### 4️⃣ Access the Application
 
 | Service | URL |
 |---------|-----|
-| Web App | `http://localhost:5100` (or the port shown in Aspire dashboard) |
+| Blazor Web App | `http://localhost:5100` (or the port shown in Aspire dashboard) |
+| Flutter Web App | `http://localhost:5160` |
 | Aspire Dashboard | `http://localhost:18888` (shown after `aspire start`) |
 | Keycloak Admin | `http://localhost:8082/admin` (admin/admin) |
+| API Scalar UI | `http://localhost:5520/scalar` (API documentation) |
 
 ### 5️⃣ Login Credentials
 
@@ -121,16 +135,16 @@ This starts all services via the Aspire orchestrator:
 
 ---
 
-## 🧩 Project Structure
+## 📂 Project Structure
 
 ```
 aspire-starter/
-├── aspire-starter.AppHost/          # Aspire orchestration
-│   └── AppHost.cs                   # Service wiring, container config
-├── aspire-starter.ApiService/       # Backend REST API
+├── aspire-starter.AppHost/              # Aspire orchestration
+│   └── AppHost.cs                       # Service wiring, container config
+├── aspire-starter.ApiService/           # Backend REST API
 │   ├── Data/
-│   │   └── HospitalDbContext.cs     # EF Core DbContext + seed data
-│   ├── Endpoints/                   # Minimal API endpoints
+│   │   └── HospitalDbContext.cs         # EF Core DbContext + seed data
+│   ├── Endpoints/                       # Minimal API endpoints
 │   │   ├── DashboardEndpoints.cs
 │   │   ├── PatientEndpoints.cs
 │   │   ├── DoctorEndpoints.cs
@@ -140,21 +154,118 @@ aspire-starter/
 │   │   ├── BillingEndpoints.cs
 │   │   ├── RoomEndpoints.cs
 │   │   └── StaffEndpoints.cs
-│   ├── Models/                      # Entity models
+│   │   └── MobileEndpoints.cs           # Mobile-specific endpoints
+│   ├── Models/                          # Entity models
 │   └── Program.cs
-├── aspire-starter.Web/              # Blazor frontend
-│   ├── ApiClients/                  # HTTP client classes
+├── aspire-starter.Web/                  # Blazor frontend
+│   ├── ApiClients/                      # HTTP client classes
 │   ├── Components/
-│   │   ├── Layout/                  # MainLayout, NavMenu
-│   │   └── Pages/                   # All page components
-│   ├── Models/                      # DTOs
+│   │   ├── Layout/                      # MainLayout, NavMenu
+│   │   └── Pages/                       # All page components
+│   ├── Models/                          # DTOs
 │   └── Program.cs
-├── aspire-starter.ServiceDefaults/  # Shared Aspire config
+├── aspire-starter.ServiceDefaults/      # Shared Aspire config
+├── flutter_app/                         # Flutter mobile app
+│   ├── lib/
+│   │   ├── main.dart                    # App entry + theme
+│   │   ├── models/                      # DTOs (patient, doctor, etc.)
+│   │   ├── screens/                     # 17 screen files
+│   │   ├── services/                    # API + auth clients
+│   │   └── widgets/                     # Reusable widgets
+│   └── pubspec.yaml
 ├── keycloak/
 │   └── import/
-│       └── hospital-realm.json      # Keycloak realm config
+│       └── hospital-realm.json          # Keycloak realm config
 └── README.md
 ```
+
+---
+
+## 📱 Flutter Mobile App
+
+A full-featured cross-platform mobile interface for HospiCare, built with Flutter. Runs on **Android** and **Web** with a responsive design that adapts to each platform.
+
+> **Detailed documentation**: See [`flutter_app/README.md`](./flutter_app/README.md)
+
+### Features
+
+| Module | Screens | Capabilities |
+|---------|---------|--------------|
+| **Dashboard** | Home + Dashboard | Animated stats cards, bed occupancy chart, quick actions, pull-to-refresh |
+| **Patients** | List + Form | Search, register/edit, archive, emergency contact info |
+| **Doctors** | List + Form | Department filter chips, add/edit, deactivate |
+| **Appointments** | List + Form | Date & status filters, book, cancel, complete |
+| **Departments** | List + Form | Department icons, add/edit |
+| **Medical Records** | List + Form | Patient selector, diagnosis/treatment/prescription |
+| **Billing** | List | Status filter, mark as paid (Cash/Card/Insurance/Online) |
+| **Rooms** | List | Ward filters, admit patient, discharge |
+| **Staff** | List + Form | Role filter chips, add/edit, deactivate |
+
+### Responsive Layout
+
+| Platform | Navigation | Breakpoint |
+|----------|-----------|------------|
+| **Web** (wide) | 200px sidebar with all 9 modules, user info, and sign out | ≥ 900px width |
+| **Mobile** (narrow) | Bottom NavigationBar (5 destinations) + Drawer | < 900px width |
+
+### Running the Flutter App
+
+Via the **Aspire dashboard** (recommended — auto-starts with backend):
+
+```bash
+cd aspire-starter
+dotnet run --project aspire-starter.AppHost
+```
+
+Or **independently**:
+
+```bash
+cd flutter_app
+
+# Install dependencies
+flutter pub get
+
+# Run on web
+flutter run -d web-server --web-port 5160 --web-hostname 0.0.0.0
+
+# Run on Android
+flutter run
+```
+
+### Building APKs
+
+The Aspire AppHost includes two build resources (`flutter-debug-apk` and `flutter-release-apk`) that appear in the Aspire dashboard. They are **stopped by default** and **never auto-trigger** — click **Start** to build:
+
+| Resource | Command | Output |
+|----------|---------|--------|
+| `flutter-debug-apk` | `flutter build apk --debug` | `flutter_app/build/app/outputs/flutter-apk/app-debug.apk` |
+| `flutter-release-apk` | `flutter build apk --release` | `flutter_app/build/app/outputs/flutter-apk/app-release.apk` |
+
+Or from CLI:
+
+```bash
+cd flutter_app
+flutter build apk --debug
+```
+
+### Auth Flow (Mobile)
+
+The Flutter app uses the **Resource Owner Password Credentials (ROPC)** flow — no external browser:
+
+```
+Flutter App → POST username+password → Keycloak Token Endpoint → JWT Token
+    → Token stored in SharedPreferences → Bearer token on all API requests
+    → Auto-refresh on expiry → Logout on refresh failure
+```
+
+### Tech Stack (Flutter)
+
+| Technology | Purpose |
+|------------|---------|
+| Flutter 3.10+ | Cross-platform UI framework |
+| `http` package | REST API client |
+| `shared_preferences` | JWT token persistence |
+| Material 3 | Design system with custom blue theme |
 
 ---
 
@@ -162,10 +273,12 @@ aspire-starter/
 
 All API endpoints are under `/api/` and require JWT Bearer authentication.
 
-### Dashboard
+### Dashboard & Mobile
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/dashboard/summary` | Get hospital statistics (patients, doctors, appointments, revenue, occupancy) |
+| GET | `/api/dashboard/summary` | Get hospital statistics |
+| GET | `/api/mobile/summary` | Mobile-optimized summary (dashboard) |
 
 ### Patients
 | Method | Endpoint | Description |
@@ -181,6 +294,7 @@ All API endpoints are under `/api/` and require JWT Bearer authentication.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/doctors` | List all doctors |
+| GET | `/api/doctors/department/{id}` | Filter by department |
 | GET | `/api/doctors/{id}` | Get doctor by ID |
 | POST | `/api/doctors` | Create new doctor |
 | PUT | `/api/doctors/{id}` | Update doctor |
@@ -190,17 +304,18 @@ All API endpoints are under `/api/` and require JWT Bearer authentication.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/departments` | List all departments |
+| GET | `/api/departments/{id}` | Get department by ID |
 | POST | `/api/departments` | Create department |
-| DELETE | `/api/departments/{id}` | Delete department |
+| PUT | `/api/departments/{id}` | Update department |
 
 ### Appointments
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/appointments` | List appointments (optional `?date=&status=`) |
-| GET | `/api/appointments/patient/{patientId}` | Get appointments by patient |
+| GET | `/api/appointments/{id}` | Get appointment by ID |
 | POST | `/api/appointments` | Create appointment |
-| POST | `/api/appointments/{id}/complete` | Mark appointment as completed |
-| POST | `/api/appointments/{id}/cancel` | Cancel appointment |
+| PUT | `/api/appointments/{id}/complete` | Mark appointment as completed |
+| PUT | `/api/appointments/{id}/cancel` | Cancel appointment |
 
 ### Medical Records
 | Method | Endpoint | Description |
@@ -211,25 +326,21 @@ All API endpoints are under `/api/` and require JWT Bearer authentication.
 ### Billing
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/billing` | List bills (optional `?status=`) |
+| GET | `/api/billing` | List bills |
 | GET | `/api/billing/patient/{patientId}` | Get bills by patient |
-| POST | `/api/billing` | Create invoice |
-| POST | `/api/billing/{id}/pay` | Make a payment |
+| PUT | `/api/billing/{id}/pay?amount=` | Mark bill as paid |
 
 ### Rooms
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/rooms` | List all rooms |
-| POST | `/api/rooms` | Create room |
-| POST | `/api/rooms/{id}/assign` | Assign patient to room |
-| POST | `/api/rooms/{id}/discharge` | Discharge patient |
-| DELETE | `/api/rooms/{id}` | Delete room |
+| PUT | `/api/rooms/{id}/assign?patientId=` | Assign patient to room |
+| PUT | `/api/rooms/{id}/discharge` | Discharge patient |
 
 ### Staff
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/staff` | List staff (optional `?role=`) |
-| GET | `/api/staff/{id}` | Get staff by ID |
+| GET | `/api/staff` | List staff |
 | POST | `/api/staff` | Create staff member |
 | PUT | `/api/staff/{id}` | Update staff member |
 | DELETE | `/api/staff/{id}` | Delete staff member |
@@ -309,6 +420,8 @@ The application includes seed data with 5 departments, 5 doctors, 3 patients, 5 
 
 ## 🔐 Authentication Flow
 
+### Web (Blazor) — OpenID Connect
+
 ```
 User → Blazor Web App (OIDC) → Keycloak (Login Page)
     → JWT Token → Blazor Stores Token
@@ -316,34 +429,42 @@ User → Blazor Web App (OIDC) → Keycloak (Login Page)
     → Returns Data
 ```
 
+### Mobile (Flutter) — ROPC
+
+```
+User enters credentials → Flutter App → POST to Keycloak Token Endpoint
+    → JWT Token returned → Stored in SharedPreferences
+    → All API requests include Bearer token
+    → Auto-refresh on 401 response → Logout if refresh fails
+```
+
 ### Keycloak Configuration
 - **Realm**: `hospital-hms`
 - **Web Client**: `hospital-web` (public client, no secret)
 - **API Client**: `hospital-api` (bearer-only, secret: `hospital-api-secret`)
+- **Mobile Client**: `hospital-mobile` (public client, ROPC enabled)
 - **Token Lifetime**: 3600 seconds (1 hour)
 
-### Blazor Token Propagation
-The app uses a `TokenService` + `TokenHandler` pattern to propagate the access token from the initial HTTP request (pre-render) to SignalR circuit operations:
-
-1. **Pre-render phase**: `MainLayout.OnInitializedAsync` captures the token from `HttpContext` and stores it in `TokenService`
-2. **SignalR circuit phase**: `TokenHandler` falls back to `TokenService.AccessToken` when `HttpContext` is unavailable
+### CORS
+The API service has CORS configured to allow all origins in development (`MobileApp` policy), enabling the Flutter web app on port 5160 and DevTunnel URLs to reach the API.
 
 ---
 
 ## 🎨 UI Design
 
+### Blazor Web App
 - **Framework**: Bootstrap 5 + Bootstrap Icons + Custom CSS
 - **Layout**: Dark sidebar (`#1b2533` gradient) with clean white content area
 - **Navigation**: Categorized sections (Clinical, Administration) with SVG icons
 - **Responsive**: Mobile-responsive with sidebar toggle
-- **Interactions**: Hover animations, active state highlighting, content fade-in
+- **Theme**: Primary blue (`#2563eb`), clean cards with shadows, rounded corners
 
-### Theme
-- **Sidebar**: Dark navy gradient with bright white text
-- **Main Content**: Clean light gray background (`#f8f9fb`)
-- **Primary Color**: Blue (`#2563eb`)
-- **Cards**: White with subtle shadows and rounded corners
-- **Tables**: Clean headers with hover effects
+### Flutter Mobile App
+- **Framework**: Material 3 with custom blue color scheme
+- **Layout**: Responsive — sidebar on web, bottom nav + drawer on mobile
+- **Dashboard**: Animated fade-in, gradient hero header, 6 stat cards, bed occupancy bar, quick actions
+- **Lists**: Searchable, pull-to-refresh, status chips with color coding
+- **Forms**: Validation, sectioned layout, patient/doctor selectors
 
 ---
 
@@ -352,12 +473,13 @@ The app uses a `TokenService` + `TokenHandler` pattern to propagate the access t
 | Layer | Technology |
 |-------|-----------|
 | **Orchestration** | .NET Aspire 13.4 |
-| **Frontend** | Blazor Interactive Server (ASP.NET Core 10) |
+| **Web Frontend** | Blazor Interactive Server (ASP.NET Core 10) |
+| **Mobile App** | Flutter 3.10+ (Android + Web) |
 | **Backend** | Minimal APIs (ASP.NET Core 10) |
 | **Database** | SQL Server via Entity Framework Core 10 |
-| **Auth** | Keycloak 25 (OpenID Connect / JWT) |
+| **Auth** | Keycloak 25 (OpenID Connect / JWT / ROPC) |
 | **Service Defaults** | OpenTelemetry, Health Checks, Resilience, Service Discovery |
-| **Styling** | Bootstrap 5, Bootstrap Icons, Custom CSS |
+| **Web Styling** | Bootstrap 5, Bootstrap Icons, Custom CSS |
 
 ---
 
@@ -390,16 +512,25 @@ az containerapp up --name hospicare --resource-group my-group --environment my-e
 - Keycloak and SQL Server run as Docker containers managed by Aspire
 - Persistent data volumes are used for both databases
 - The application requires Docker Desktop to be running for local development
+- For mobile APK builds, use the Aspire dashboard resources or Flutter CLI
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Build the solution
+# Build the .NET solution
+cd aspire-starter
 dotnet build
 
-# Run tests (when added)
+# Flutter analysis (mobile app)
+cd flutter_app
+flutter analyze
+
+# Run Flutter tests
+flutter test
+
+# Run .NET tests (when added)
 dotnet test
 ```
 
@@ -408,7 +539,8 @@ dotnet test
 ## ❓ Troubleshooting
 
 ### 401 Unauthorized when loading dashboard
-The `TokenService` in `MainLayout` captures the token during pre-render for use during SignalR circuit operations. If tokens expire, re-login.
+For Blazor: The `TokenService` captures the token during pre-render. If tokens expire, re-login.
+For Flutter: The app auto-refreshes tokens. If refresh fails, re-login.
 
 ### File lock errors during build
 ```bash
@@ -419,10 +551,24 @@ dotnet build
 ```
 
 ### Keycloak startup failures
-Ensure Docker Desktop is running and port 8082 is available.
+Ensure Docker Desktop is running and port 8082 is available. The API service includes startup warmup logic that waits for Keycloak (up to 30 seconds).
 
 ### SQL Server connection issues
 Verify Docker has the SQL Server image and check the connection string in user secrets.
+
+### Flutter "Could not connect to server"
+- Ensure the Aspire AppHost is running
+- Android emulator uses `10.0.2.2` automatically instead of `localhost`
+- For web, ensure CORS is configured (it is — the `MobileApp` policy allows all origins)
+
+### Flutter APK build fails
+```bash
+cd flutter_app
+flutter doctor -v
+flutter clean
+flutter pub get
+flutter build apk --debug
+```
 
 ---
 
@@ -434,4 +580,4 @@ This project is provided as a demonstration and learning resource.
 
 ## 👥 Contributors
 
-Built with .NET Aspire, Blazor, and Keycloak. Designed for modern hospital management.
+Built with .NET Aspire, Blazor, Flutter, and Keycloak. Designed for modern hospital management.
